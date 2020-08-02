@@ -48,4 +48,24 @@ extension Reflection {
 
     return result
   }
+    
+    @_disfavoredOverload
+  public static func allNamedStoredPropertyKeyPaths(
+    for type: Any.Type
+  ) -> [(name: String, keyPath: AnyKeyPath)] {
+    guard let metadata = reflect(type) as? TypeMetadata,
+      metadata.kind == .struct || metadata.kind == .class
+    else {
+      return []
+    }
+
+    var result = [(name: String, keyPath: AnyKeyPath)]()
+
+    for i in 0..<metadata.contextDescriptor.fields.records.count {
+      let kp = createKeyPath(root: metadata, leaf: i)
+      result.append((metadata.contextDescriptor.fields.records[i].name, kp))
+    }
+
+    return result
+  }
 }
